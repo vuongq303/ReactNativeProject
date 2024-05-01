@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ReactNativeProject",
-    "slug": "ReactNativeProject",
+    "name": "HQHQ",
+    "slug": "HQHQ",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,10 +21,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.quanhq.HQHQ"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "07bbeafe-10ab-4398-957a-8d467783f415"
+      }
     }
   }
 }
