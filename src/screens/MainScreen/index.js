@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Avatar, HStack, Center, NativeBaseProvider } from "native-base";
+import { Avatar, HStack, Center } from "native-base";
 import {
   TouchableOpacity,
   StyleSheet,

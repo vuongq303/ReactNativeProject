@@ -1,39 +1,22 @@
-const express = require("express"),
-  dotenv = require("dotenv"),
-  mongoose = require("mongoose"),
-  routerLogin = require("./router/login"),
-  getEnv = require("./controller/getEnv"),
-  routerProduct = require("./router/product"),
-  routerCart = require("./router/cart"),
-  routerFavorite = require("./router/favorite"),
-  chatRouter = require("./router/chat"),
-  http = require("http"),
-  socketIo = require("socket.io"),
-  passwordRouter = require("./router/password"),
-  recentRouter = require("./router/recent"),
-  commentRouter = require("./router/comment");
+const app = require("./config");
+const dotenv = require("./config/.env");
+const http = require("http");
+const socketIo = require("socket.io");
 
-const app = express();
-app.use(express.json());
-dotenv.config();
-
-const port = getEnv.getPort();
-const db_name = getEnv.getDatabase();
-const db_url = getEnv.getUrlDatabase();
+const routerLogin = require("./router/login");
+const routerProduct = require("./router/product");
+const routerCart = require("./router/cart");
+const routerFavorite = require("./router/favorite");
+const chatRouter = require("./router/chat");
+const passwordRouter = require("./router/password");
+const recentRouter = require("./router/recent");
+const commentRouter = require("./router/comment");
+const defaultRouter = require("./config/router");
 
 const server = http.createServer(app);
 const io = socketIo(server);
 
-mongoose
-  .connect(db_url + db_name)
-  .then(function () {
-    console.log(`Connected ${db_name}...`);
-  })
-  .catch(function (err) {
-    console.log(err);
-  });
-
-app.get("/", (req, res) => res.send("<h1>Hello</h1>"));
+app.use("/", defaultRouter);
 app.use("/login", routerLogin);
 app.use("/products", routerProduct);
 app.use("/cart", routerCart);
@@ -53,6 +36,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(port, () => {
-  console.log("Server running in " + port + "...");
+server.listen(dotenv.port, () => {
+  console.log("Server running in " + dotenv.port + "...");
 });

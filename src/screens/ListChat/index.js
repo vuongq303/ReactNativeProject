@@ -9,14 +9,13 @@ import {
   Spacer,
   Center,
   Divider,
-  NativeBaseProvider,
   View,
 } from "native-base";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
 import axios from "axios";
-import { ipChat } from "@env";
 import { getStorage } from "../../service/storageService";
 import { useNavigation } from "@react-navigation/native";
+import { ip_chat } from "../../service/.env";
 
 export default function () {
   const [data, setData] = useState([]);
@@ -26,7 +25,7 @@ export default function () {
   const getUser = async function () {
     const idUser = await getStorage("@infoUser");
     await axios
-      .get(`${ipChat}/getAllUser`, {
+      .get(`${ip_chat}/getAllUser`, {
         params: {
           id: idUser,
         },

@@ -1,6 +1,6 @@
 import { Text, StyleSheet } from "react-native";
 import React, { useState } from "react";
-import { Input, Icon, Center, NativeBaseProvider, Button } from "native-base";
+import { Input, Icon, Center, Button } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { findEmail } from "./api";
 import { validateEmail } from "../../utils/validateUtils";

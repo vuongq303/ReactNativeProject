@@ -1,15 +1,15 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import Storage from "../../../key/Storage";
-import { ipComment } from "@env";
 import axios from "axios";
 import Toast from "../../service/toastService";
+import { getStorage } from "../../service/storageService";
+import { ip_commnet } from "../../service/.env";
 
 export const sendComment = createAsyncThunk(
   "comment/sendComment",
   async (val) => {
-    const idUser = await Storage.getData("@infoUser");
+    const idUser = await getStorage("@infoUser");
     try {
-      let { data } = await axios.post(`${ipComment}/addComment`, {
+      let { data } = await axios.post(`${ip_commnet}/addComment`, {
         idUser,
         idProduct: val.itemId,
         text: val.text,
@@ -25,7 +25,7 @@ export const getComment = createAsyncThunk(
   "comment/getComment",
   async (val) => {
     try {
-      let { data } = await axios.get(`${ipComment}/getComment`, {
+      let { data } = await axios.get(`${ip_commnet}/getComment`, {
         params: {
           idProduct: val.itemId,
         },

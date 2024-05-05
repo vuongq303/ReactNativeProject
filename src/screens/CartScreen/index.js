@@ -6,7 +6,6 @@ import {
   Box,
   Actionsheet,
   Divider,
-  NativeBaseProvider,
   Button,
   useDisclose,
 } from "native-base";
@@ -25,11 +24,11 @@ import axios from "axios";
 import ItemCart from "./components/ItemCart";
 import { getProductId, removeProduct, updateProductToCart } from "./api";
 import { MaterialIcons } from "@expo/vector-icons";
-import { ipCart } from "@env";
 import { getStorage } from "../../service/storageService";
 import Toast from "../../service/toastService";
 import { avatar } from "../../service/imageService";
 import { useNavigation } from "@react-navigation/native";
+import { ip_cart } from "../../service/.env";
 
 export default function () {
   const [loading, setLoading] = useState(true);
@@ -42,7 +41,7 @@ export default function () {
   async function getData() {
     const id = await getStorage("@infoUser");
     await axios
-      .post(`${ipCart}/getProductCart`, { id_: id })
+      .post(`${ip_cart}/getProductCart`, { id_: id })
       .then((result) => {
         setData(result.data);
       })

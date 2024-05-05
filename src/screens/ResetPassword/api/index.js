@@ -1,10 +1,10 @@
 import axios from "axios";
-import { ipPassword } from "@env";
+import { ip_password } from "../../../service/.env";
 
 export async function updatePassword(data) {
   if (data) {
     try {
-      let result = await axios.post(`${ipPassword}/updatePassword`, data);
+      let result = await axios.post(`${ip_password}/updatePassword`, data);
       return result.data;
     } catch (error) {
       console.log(error);

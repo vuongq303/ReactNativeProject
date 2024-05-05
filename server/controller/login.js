@@ -1,11 +1,10 @@
 const userModel = require("../model/user");
 const jwt = require("jsonwebtoken");
-const env = require("./getEnv");
+const env = require("../config/.env");
 
 class loginController {
   async signIn(req, res) {
-    const username = req.body.username;
-    const password = req.body.password;
+    const { username, password } = req.body;
     await userModel
       .find({ username: username, password: password })
       .then((result) => {
@@ -55,12 +54,12 @@ class loginController {
   }
 
   encryptionLogin(req, res) {
-    const token = jwt.sign(req.body, env.getKeyJwt());
+    const token = jwt.sign(req.body, env.keyJwt);
     res.json(token);
   }
   decryptionLogin(req, res) {
     const token = req.body.headers.Authorization;
-    const result = jwt.verify(token, env.getKeyJwt());
+    const result = jwt.verify(token, env.keyJwt);
     res.json(result);
   }
 }

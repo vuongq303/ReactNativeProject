@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ipProduct } from "@env";
 import axios from "axios";
+import { ip_product } from "../../service/.env";
 
 export const getProducts = createAsyncThunk("product/getProduct", async () => {
   try {
-    const response = await axios.get(`${ipProduct}/getProducts`);
-    return response.data;
+    const { data } = await axios.get(`${ip_product}/getProducts`);
+    return data;
   } catch (error) {
     console.log(error);
   }
@@ -14,7 +14,7 @@ export const getItemProduct = createAsyncThunk(
   "product/getItemProduct",
   async (val) => {
     try {
-      let { data } = await axios.post(`${ipProduct}/getItemProduct`, val);
+      let { data } = await axios.post(`${ip_product}/getItemProduct`, val);
       return data;
     } catch (error) {
       console.log(error);
@@ -47,6 +47,10 @@ const slice = createSlice({
       state.data = action.payload;
       state.loading = false;
       state.err = null;
+    });
+    builder.addCase(getProducts.rejected, (state, action) => {
+      state.loading = true;
+      state.err = action.payload;
     });
   },
 });

@@ -1,9 +1,9 @@
 import axios from "axios";
-import { ipCart } from "@env";
+import { ip_cart } from "../../../service/.env";
 
 export async function removeProduct(data) {
   try {
-    let result = await axios.post(`${ipCart}/removeProductCart`, data);
+    let result = await axios.post(`${ip_cart}/removeProductCart`, data);
     return result.data;
   } catch (error) {
     console.log(error);
@@ -12,7 +12,7 @@ export async function removeProduct(data) {
 
 export async function getProductId(data) {
   try {
-    let result = await axios.post(`${ipCart}/getProductId`, data);
+    let result = await axios.post(`${ip_cart}/getProductId`, data);
     return result.data;
   } catch (error) {
     console.log(error);
@@ -21,7 +21,7 @@ export async function getProductId(data) {
 
 export async function updateProductToCart(data) {
   try {
-    let result = await axios.post(`${ipCart}/updateProductToCart`, data);
+    let result = await axios.post(`${ip_cart}/updateProductToCart`, data);
     return result.data;
   } catch (error) {
     console.log(error);

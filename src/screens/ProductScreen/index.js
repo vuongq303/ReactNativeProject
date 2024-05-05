@@ -14,7 +14,6 @@ import {
   useDisclose,
   Box,
   Center,
-  NativeBaseProvider,
   Button,
   Divider,
 } from "native-base";
@@ -22,7 +21,6 @@ import { AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useEffect, useState, useCallback } from "react";
 const { width } = Dimensions.get("window");
-import { ipProduct } from "@env";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import ListComment from "./components/ListComment";
@@ -36,6 +34,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import Toast from "../../service/toastService";
 import { getStorage } from "../../service/storageService";
 import { addProductToCart } from "./api";
+import { ip_product } from "../../service/.env";
 
 export default function () {
   const navigation = useNavigation();
@@ -47,7 +46,7 @@ export default function () {
   const [refreshing, setRefreshing] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclose();
   const [status, setStatus] = useState(false);
-  
+
   const heart_ = useSelector((s) => s.favorite.heart);
   const dispatch = useDispatch();
 
@@ -63,7 +62,7 @@ export default function () {
 
   const getItem = async () => {
     try {
-      const response = await axios.post(`${ipProduct}/getItemProduct`, itemId);
+      const response = await axios.post(`${ip_product}/getItemProduct`, itemId);
       const json = response.data;
       const idUser = await getStorage("@infoUser");
       dispatch(

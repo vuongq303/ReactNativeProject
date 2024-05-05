@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Input,
   Icon,
@@ -22,7 +22,7 @@ export default function () {
   const navigation = useNavigation();
 
   function InputForm() {
-    const [show, setShow] = React.useState(false);
+    const [show, setShow] = useState(false);
 
     return (
       <Stack space={4} w="100%" alignItems="center">
@@ -68,7 +68,7 @@ export default function () {
       Toast(validateEmpty(user) + " empty!");
     } else {
       const result = await signIn(user);
-      if (result != "") {
+      if (result) {
         const savedKey = await encryptionLogin(
           {
             username: result.username,
@@ -76,9 +76,11 @@ export default function () {
           },
           result.id
         );
-        savedKey
-          ? navigation.navigate("Main")
-          : console.log("Save key complete");
+        console.log(savedKey);
+        if (savedKey) {
+          navigation.navigate("Main");
+          console.log("Save key complete");
+        }
       } else {
         Toast("Username or Password incorrect!");
       }

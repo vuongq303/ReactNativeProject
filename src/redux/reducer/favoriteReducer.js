@@ -1,15 +1,15 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ipFavorite } from "@env";
 import axios from "axios";
-import Storage from "../../../key/Storage";
 import Toast from "../../service/toastService";
+import { getStorage } from "../../service/storageService";
+import { ip_favorite } from "../../service/.env";
 
 export const getProductFavorite = createAsyncThunk(
   "favorite/getProduct",
   async () => {
     try {
-      const idUser = await Storage.getData("@infoUser");
-      let { data } = await axios.get(`${ipFavorite}/getProductFavorite`, {
+      const idUser = await getStorage("@infoUser");
+      let { data } = await axios.get(`${ip_favorite}/getProductFavorite`, {
         params: { id: idUser },
       });
       return data;
@@ -23,7 +23,7 @@ export const addProductToFavorite = createAsyncThunk(
   "favorite/addProduct",
   async (val) => {
     try {
-      let { data } = await axios.post(`${ipFavorite}/addToFavorite`, val);
+      let { data } = await axios.post(`${ip_favorite}/addToFavorite`, val);
       return data;
     } catch (error) {
       console.log(error);
@@ -35,7 +35,7 @@ export const removeFromFavorite = createAsyncThunk(
   "favorite/removeProduct",
   async (val) => {
     try {
-      let { data } = await axios.post(`${ipFavorite}/removeFromFavorite`, val);
+      let { data } = await axios.post(`${ip_favorite}/removeFromFavorite`, val);
       return data;
     } catch (error) {
       console.log(error);
@@ -47,7 +47,7 @@ export const checkInFavorite = createAsyncThunk(
   "favorite/checkIn",
   async (val) => {
     try {
-      let { data } = await axios.post(`${ipFavorite}/checkInFavorite`, val);
+      let { data } = await axios.post(`${ip_favorite}/checkInFavorite`, val);
       return data;
     } catch (error) {
       console.log(error);

@@ -3,9 +3,9 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import io from "socket.io-client";
 import { GiftedChat } from "react-native-gifted-chat";
-import { ipChat, ip } from "@env";
 import { getStorage, setStorage } from "../../service/storageService";
-const socket = io(ip);
+import { ip_chat, ip_default } from "../../service/.env";
+const socket = io(ip_default);
 
 export default function ChatScreen({ navigation, route }) {
   const [messages, setMessages] = useState([]);
@@ -14,7 +14,7 @@ export default function ChatScreen({ navigation, route }) {
 
   const getUser = async function (id) {
     return await axios
-      .get(`${ipChat}/getUser`, { params: { id: id } })
+      .get(`${ip_chat}/getUser`, { params: { id: id } })
       .then((result) => result.data)
       .catch((err) => {
         console.log(err);
@@ -23,7 +23,7 @@ export default function ChatScreen({ navigation, route }) {
 
   async function getUseArr(arr_id) {
     await axios
-      .post(`${ipChat}/getUserArr`, arr_id)
+      .post(`${ip_chat}/getUserArr`, arr_id)
       .then(async (result) => {
         await setStorage("@idMessage", result.data[0]._id);
       })
@@ -64,10 +64,10 @@ export default function ChatScreen({ navigation, route }) {
 
   async function setUser(arr_id) {
     await axios
-      .post(`${ipChat}/setUser`, arr_id)
+      .post(`${ip_chat}/setUser`, arr_id)
       .then(async (result) => {
         if (result.data != "") {
-          await axios.post(`${ipChat}/setSkeleton`, {
+          await axios.post(`${ip_chat}/setSkeleton`, {
             id: result.data[0]._id,
             message: [],
           });
@@ -80,7 +80,7 @@ export default function ChatScreen({ navigation, route }) {
   async function getMessage() {
     let idMessage = await getStorage("@idMessage");
     await axios
-      .get(`${ipChat}/getMessage`, {
+      .get(`${ip_chat}/getMessage`, {
         params: {
           id: idMessage,
         },
@@ -109,7 +109,7 @@ export default function ChatScreen({ navigation, route }) {
     let idMessage = await getStorage("@idMessage");
     messages[0]._id = messages[0]._id + Math.floor(Math.random() * 1001);
     await axios
-      .post(`${ipChat}/sendMessage`, {
+      .post(`${ip_chat}/sendMessage`, {
         id: idMessage,
         messages: messages,
       })
