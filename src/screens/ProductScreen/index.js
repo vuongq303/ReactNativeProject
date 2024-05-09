@@ -35,30 +35,31 @@ import Toast from "../../service/toastService";
 import { getStorage } from "../../service/storageService";
 import { addProductToCart } from "./api";
 import { ip_product } from "../../service/.env";
+import { numberService } from "../../service/numberService";
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from "react-native-reanimated";
 
 export default function () {
   const navigation = useNavigation();
   const route = useRoute();
   const itemId = route.params;
+  const dispatch = useDispatch();
+  const scrollY = useSharedValue(0);
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclose();
   const [status, setStatus] = useState(false);
-
-  const heart_ = useSelector((s) => s.favorite.heart);
-  const dispatch = useDispatch();
+  const heart_ = "heart";
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await getItem();
     dispatch(getComment({ itemId: itemId.itemId }));
   }, []);
-
-  function eArabic(x) {
-    return parseInt(x).toLocaleString("en-ES");
-  }
 
   const getItem = async () => {
     try {
@@ -79,6 +80,10 @@ export default function () {
       setRefreshing(false);
     }
   };
+
+  const scrollHandle = useAnimatedScrollHandler((e) => {
+    scrollY.value = e.contentOffset.y;
+  });
 
   async function changeToFavorite() {
     const idUser = await getStorage("@infoUser");
@@ -106,16 +111,10 @@ export default function () {
     getItem();
   }, []);
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => <NavigationBar />,
-    });
-  }, []);
-
   function ActionSheetView() {
-    const [selectedButton, setSelectedButton] = React.useState(null);
-    const [info, setInfo] = React.useState({ price: 0, quantity: 0, size: "" });
-    var [quantity, setQuantity] = React.useState(1);
+    const [selectedButton, setSelectedButton] = useState(null);
+    const [info, setInfo] = useState({ price: 0, quantity: 0, size: "" });
+    var [quantity, setQuantity] = useState(1);
 
     const toggleColorMode = (index, text) => {
       setSelectedButton(index == selectedButton ? null : index);
@@ -177,7 +176,7 @@ export default function () {
                 />
                 <View style={{ marginTop: 90 }}>
                   <Text style={{ color: "red", fontSize: 18 }}>
-                    ₫{eArabic(info.price)}
+                    ₫{numberService(info.price)}
                   </Text>
                   <Text style={styles.quantity}>Quantity: {info.quantity}</Text>
                 </View>
@@ -263,42 +262,45 @@ export default function () {
 
   function NavigationBar() {
     return (
-      <View style={[styles.containerNavigation]}>
-        <View style={[styles.containerBar, styles.container]}>
-          <TouchableOpacity
-            style={{ marginLeft: 5 }}
-            onPress={() => navigation.goBack()}
-          >
-            <MaterialIcons
-              name="arrow-back"
-              color="#fff"
-              size={25}
+      <Animated.View style={[styles.containerNavigation]}>
+        <TouchableOpacity
+          style={{ marginLeft: 5 }}
+          onPress={() => navigation.goBack()}
+        >
+          <MaterialIcons
+            name="arrow-back"
+            color="#fff"
+            size={25}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+        <View style={styles.containerBar}>
+          <TouchableOpacity onPress={changeToFavorite}>
+            <AntDesign
+              name={heart_}
               style={styles.icon}
+              size={25}
+              color="#fff"
             />
           </TouchableOpacity>
-          <View style={[styles.containerBar]}>
-            <TouchableOpacity
-              style={{ marginRight: 5 }}
-              onPress={() => navigation.navigate("Cart")}
-            >
-              <MaterialIcons
-                style={styles.icon}
-                color="#fff"
-                name="shopping-cart"
-                size={25}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("allChat")}>
-              <MaterialIcons
-                style={styles.icon}
-                color="#fff"
-                name="chat"
-                size={25}
-              />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
+            <MaterialIcons
+              style={styles.icon}
+              color="#fff"
+              name="shopping-cart"
+              size={25}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("allChat")}>
+            <MaterialIcons
+              style={styles.icon}
+              color="#fff"
+              name="chat"
+              size={25}
+            />
+          </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     );
   }
 
@@ -308,7 +310,9 @@ export default function () {
         <View style={{ margin: 10 }}>
           <View style={{ flexDirection: "row" }}>
             <Text style={[styles.priceD]}>₫</Text>
-            <Text style={styles.price}>{eArabic(data[0].info[0].price)}</Text>
+            <Text style={styles.price}>
+              {numberService(data[0].info[0].price)}
+            </Text>
           </View>
           <Text style={styles.border}> Buy to received gift</Text>
         </View>
@@ -390,42 +394,33 @@ export default function () {
       </View>
     );
   }
-  function IamgeView() {
-    return (
-      <View style={{ position: "relative" }}>
-        <Image
-          height={400}
-          source={{ uri: data[0].imageUri }}
-          resizeMode="cover"
-        />
-        <TouchableOpacity
-          style={{ position: "absolute", bottom: 10, right: 10 }}
-          onPress={changeToFavorite}
-        >
-          <AntDesign name={heart_} style={styles.icon} size={25} color="#fff" />
-        </TouchableOpacity>
-      </View>
-    );
-  }
+
   return (
     <>
       {loading ? (
         <ActivityIndicator />
       ) : (
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          <IamgeView />
-          <ScrollView>
-            <View>
-              <Body />
-              <ActionSheetView />
-            </View>
-          </ScrollView>
-          <ListComment itemId={itemId} />
-        </ScrollView>
+        <>
+          <Animated.ScrollView
+            onScroll={scrollHandle}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            <Image
+              height={400}
+              source={{ uri: data[0].imageUri }}
+              resizeMode="cover"
+            />
+            <ScrollView>
+              <View>
+                <Body />
+                <ActionSheetView />
+              </View>
+            </ScrollView>
+          </Animated.ScrollView>
+          <NavigationBar />
+        </>
       )}
       {!loading ? <ButtonForm /> : false}
     </>
@@ -524,8 +519,18 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   containerNavigation: {
-    width: "98%",
-    marginBottom: "8%",
-    position: "relative",
+    width: "100%",
+    flexDirection: "row",
+    height: 100,
+    alignItems: "center",
+    position: "absolute",
+    justifyContent: "space-between",
+  },
+  containerNavigationAnimated: {
+    width: "100%",
+    flexDirection: "row",
+    height: 50,
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 });

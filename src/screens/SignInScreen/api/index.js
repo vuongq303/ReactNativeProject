@@ -3,6 +3,7 @@ import { setStorage } from "../../../service/storageService";
 import { ip_login } from "../../../service/.env";
 
 export async function signIn(data) {
+  console.log(ip_login);
   if (data) {
     try {
       let result = await axios.post(`${ip_login}/signIn`, data);
