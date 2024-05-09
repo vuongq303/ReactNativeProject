@@ -1,19 +1,12 @@
-# quanhqph33420ReactNative
+# Hoang Quan React Native Project
 
-- # Install library
-- npm install
- @react-navigation/native
- @react-navigation/native-stack
- native-base
- express
- mongoose
- dotenv
- axios
- nodemon
- http
- jsonwebtoken
- react-native-swiper
- @react-native-async-storage/async-storage
- react-native-gifted-chat
- socket.io
- socket.io-client
+# How to run app 
+# Client
+- open terminal -> enter ipconfig -> search 192.168.xx.xx 
+- edit file src/service/.env edit all ip
+# Server
+- open terminal -> cd server -> enter nodemon
+# Database
+- create database shop 
+- create collection products
+- import file products.json in project
