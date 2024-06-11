@@ -37,7 +37,10 @@ import { addProductToCart } from "./api";
 import { ip_product } from "../../service/.env";
 import { numberService } from "../../service/numberService";
 import Animated, {
+  Extrapolation,
+  interpolate,
   useAnimatedScrollHandler,
+  useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
 
@@ -45,20 +48,20 @@ export default function () {
   const navigation = useNavigation();
   const route = useRoute();
   const itemId = route.params;
-  const dispatch = useDispatch();
   const scrollY = useSharedValue(0);
+  const dispatch = useDispatch();
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclose();
   const [status, setStatus] = useState(false);
-  const heart_ = "heart";
+  const heart_ = "hearto";
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await getItem();
-    dispatch(getComment({ itemId: itemId.itemId }));
+    // dispatch(getComment({ itemId: itemId.itemId }));
   }, []);
 
   const getItem = async () => {
@@ -85,6 +88,23 @@ export default function () {
     scrollY.value = e.contentOffset.y;
   });
 
+  const animatedHideHeader = useAnimatedStyle(() => ({
+    opacity: interpolate(scrollY.value, [0, 100], [1, 0], Extrapolation.CLAMP),
+  }));
+
+  const animatedShowHeader = useAnimatedStyle(() => ({
+    opacity: interpolate(scrollY.value, [0, 100], [0, 1], Extrapolation.CLAMP),
+  }));
+
+  const aniamtedTextShow = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      scrollY.value,
+      [425, 426],
+      [0, 1],
+      Extrapolation.CLAMP
+    ),
+  }));
+  
   async function changeToFavorite() {
     const idUser = await getStorage("@infoUser");
     heart_ == "hearto"
@@ -163,6 +183,7 @@ export default function () {
 
     return (
       <Center>
+        {console.log("render action sheet view")}
         <Actionsheet isOpen={isOpen} onClose={onClose}>
           <Actionsheet.Content>
             <Box w="100%" h={400}>
@@ -262,7 +283,8 @@ export default function () {
 
   function NavigationBar() {
     return (
-      <Animated.View style={[styles.containerNavigation]}>
+      <Animated.View style={[styles.containerNavigation, animatedHideHeader]}>
+        {console.log("render navigation bar")}
         <TouchableOpacity
           style={{ marginLeft: 5 }}
           onPress={() => navigation.goBack()}
@@ -304,9 +326,65 @@ export default function () {
     );
   }
 
+  function NavigationBarShow() {
+    return (
+      <Animated.View
+        style={[styles.containerNavigationShow, animatedShowHeader]}
+      >
+        {console.log("render navigation bar show")}
+        <View style={{ flexDirection: "row", marginTop: 32 }}>
+          <TouchableOpacity
+            style={{ marginLeft: 5 }}
+            onPress={() => navigation.goBack()}
+          >
+            <MaterialIcons
+              name="arrow-back"
+              color="#fff"
+              size={25}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+          <Animated.Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[styles.textHeaderShow, aniamtedTextShow]}
+          >
+            {data[0].productName}
+          </Animated.Text>
+        </View>
+        <View style={styles.containerBarShow}>
+          <TouchableOpacity onPress={changeToFavorite}>
+            <AntDesign
+              name={"hearto"}
+              style={styles.icon}
+              size={25}
+              color="#fff"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
+            <MaterialIcons
+              style={styles.icon}
+              color="#fff"
+              name="shopping-cart"
+              size={25}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("allChat")}>
+            <MaterialIcons
+              style={styles.icon}
+              color="#fff"
+              name="chat"
+              size={25}
+            />
+          </TouchableOpacity>
+        </View>
+      </Animated.View>
+    );
+  }
   function Body() {
     return (
       <View>
+        {console.log("render body")}
         <View style={{ margin: 10 }}>
           <View style={{ flexDirection: "row" }}>
             <Text style={[styles.priceD]}>₫</Text>
@@ -397,6 +475,7 @@ export default function () {
 
   return (
     <>
+      {console.log("render main")}
       {loading ? (
         <ActivityIndicator />
       ) : (
@@ -418,7 +497,9 @@ export default function () {
                 <ActionSheetView />
               </View>
             </ScrollView>
+            <View style={{ height: 500 }} />
           </Animated.ScrollView>
+          <NavigationBarShow />
           <NavigationBar />
         </>
       )}
@@ -526,11 +607,29 @@ const styles = StyleSheet.create({
     position: "absolute",
     justifyContent: "space-between",
   },
-  containerNavigationAnimated: {
+  containerNavigationShow: {
     width: "100%",
     flexDirection: "row",
-    height: 50,
-    alignItems: "center",
+    height: 80,
+    position: "absolute",
     justifyContent: "space-between",
+    backgroundColor: "#fff",
+    shadowColor: "#fff",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  containerBarShow: {
+    flexDirection: "row",
+    marginHorizontal: 5,
+    marginTop: 32,
+  },
+  textHeaderShow: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 5,
+    marginLeft: 20,
+    width: "50%",
   },
 });

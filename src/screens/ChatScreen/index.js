@@ -37,10 +37,22 @@ export default function ChatScreen({ navigation, route }) {
   }, []);
 
   useEffect(() => {
-    socket.on("returnMessage", (message) => {
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, message)
-      );
+    socket.on("returnMessage", async (message) => {
+      let sender = await getStorage("@infoUser");
+      let { receiver } = route.params;
+
+      let idReceiverFromServer = message.idReceiver;
+      let idUserSendFromServer = message.message.user._id;
+
+      let messFromServer = message.message;
+      if (
+        (sender == idUserSendFromServer && receiver == idReceiverFromServer) ||
+        (receiver == idUserSendFromServer && sender == idReceiverFromServer)
+      ) {
+        setMessages((previousMessages) =>
+          GiftedChat.append(previousMessages, messFromServer)
+        );
+      }
     });
   }, []);
 
@@ -107,14 +119,17 @@ export default function ChatScreen({ navigation, route }) {
 
   const onSend = useCallback(async (messages = []) => {
     let idMessage = await getStorage("@idMessage");
-    messages[0]._id = messages[0]._id + Math.floor(Math.random() * 1001);
+    let { receiver } = route.params;
     await axios
       .post(`${ip_chat}/sendMessage`, {
         id: idMessage,
         messages: messages,
       })
       .then((result) => {
-        socket.emit("sendMessage", result.data[0]);
+        socket.emit("sendMessage", {
+          message: result.data[0],
+          idReceiver: receiver,
+        });
       })
       .catch((err) => {
         console.log(err);
